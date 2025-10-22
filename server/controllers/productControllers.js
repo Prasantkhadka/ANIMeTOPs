@@ -34,7 +34,18 @@ export const addProduct = async (req, res) => {
 export const listProducts = async (req, res) => {
   try {
     const products = await productModel.find({});
-    res.status(200).json(products);
+    const formatted = products.map((p) => ({
+      productId: p._id,
+      name: p.name,
+      price: p.price,
+      offerPrice: p.offerPrice,
+      sizes: p.sizes,
+      category: p.category,
+      images: p.images,
+      inStock: p.inStock,
+      description: p.description,
+    }));
+    res.status(200).json(formatted);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }

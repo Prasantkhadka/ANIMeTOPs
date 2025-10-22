@@ -4,7 +4,7 @@ import {
   listProducts,
   getProduct,
   changeStock,
-} from "../controllers/productController.js";
+} from "../controllers/productControllers.js";
 import { upload } from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
 
