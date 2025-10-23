@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React from "react";
 import Title from "../components/Title.jsx";
 import { useContext, useState } from "react";
 import { ShopContext } from "../context/ShopContext.jsx";
@@ -17,7 +17,7 @@ const PlaceOrder = () => {
     street: "",
     city: "",
     state: "",
-    zipCode: "",
+    zipcode: "",
     country: "",
   });
 
@@ -113,9 +113,9 @@ const PlaceOrder = () => {
             <div className="flex gap-3">
               <input
                 onChange={changeHandler}
-                value={FormData.zipCode}
+                value={FormData.zipcode}
                 type="text"
-                name="zipCode"
+                name="zipcode"
                 placeholder="Zip Code"
                 className="ring-1 ring-slate-900/15 p-1 ol-3 rounded-sm bg-white outline-none w-1/2"
                 required

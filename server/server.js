@@ -7,6 +7,7 @@ import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import cartRouter from "./routes/cartRoutes.js";
+import orderRouter from "./routes/orderRoutes.js";
 import connectCloudinary from "./config/cloudinary.js";
 
 dotenv.config(); /// Load environment variables from .env file
@@ -35,6 +36,7 @@ app.use("/api/user", userRouter); /// User routes
 app.use("/api/admin", adminRouter); /// Admin routes
 app.use("/api/product", productRouter); /// Product routes
 app.use("/api/cart", cartRouter); /// Cart routes
+app.use("/api/order", orderRouter); /// Order routes
 
 /// Basic route to test server
 app.get("/", (req, res) => {
