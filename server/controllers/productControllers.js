@@ -12,16 +12,13 @@ export const addProduct = async (req, res) => {
         const url = await cloudinary.uploader.upload(file.path, {
           resource_type: "image",
         });
-        return url;
+        return url.secure_url;
       })
     );
 
-    console.log("Product Data:", productData);
-    console.log("Image URLs:", imageUrls);
-
     await productModel.create({
       ...productData,
-      images: imageUrls,
+      image: imageUrls,
     });
 
     res.status(201).json({ message: "Product added successfully" });
@@ -41,7 +38,7 @@ export const listProducts = async (req, res) => {
       offerPrice: p.offerPrice,
       sizes: p.sizes,
       category: p.category,
-      images: p.images,
+      image: p.image,
       inStock: p.inStock,
       description: p.description,
     }));

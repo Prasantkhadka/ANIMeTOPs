@@ -1,7 +1,10 @@
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { dummyProducts } from "../assets/data.js";
 import { toast } from "react-hot-toast";
+import axios from "axios";
+
+axios.defaults.withCredentials = true; // Enable sending cookies for API requests
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL; // Set base URL as backend url for API requests
 
 export const ShopContext = createContext();
 const ShopContextProvider = ({ children }) => {
@@ -15,9 +18,34 @@ const ShopContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({ items: [] });
   const [isAdmin, setIsAdmin] = useState(false);
 
+  useEffect(() => {
+    const checkAdminAuth = async () => {
+      try {
+        const res = await axios.get(`/api/admin/is-auth`, {
+          withCredentials: true,
+        });
+        if (res.status === 200) {
+          setIsAdmin(true);
+        }
+      } catch {
+        setIsAdmin(false);
+      }
+    };
+    checkAdminAuth();
+  }, []);
+
   // Fetch all products
   const fetchProducts = async () => {
-    setProducts(dummyProducts);
+    try {
+      const response = await axios.get("/api/product/list-products");
+      if (response.status === 200) {
+        setProducts(response.data);
+      } else {
+        toast.error(response.data.message || "Failed to fetch products");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   // Add to cart
@@ -87,6 +115,7 @@ const ShopContextProvider = ({ children }) => {
     isAdmin,
     setIsAdmin,
     fetchProducts,
+    axios,
   };
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 };

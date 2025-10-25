@@ -17,7 +17,7 @@ const MyOrders = () => {
 
       {orders.length > 0 ? (
         <div className="space-y-10">
-          {orders.map((order, index) => (
+          {orders.map((order) => (
             <div
               key={order._id}
               className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"

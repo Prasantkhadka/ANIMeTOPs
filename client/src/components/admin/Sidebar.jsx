@@ -6,14 +6,27 @@ import { FaListAlt } from "react-icons/fa";
 import { MdFactCheck } from "react-icons/md";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
+import toast from "react-hot-toast";
 
 const Sidebar = () => {
-  const { navigate } = useContext(ShopContext);
+  const { navigate, axios } = useContext(ShopContext);
   const navItems = [
     { path: "/admin", label: "Add Product", icon: <FaSquarePlus /> },
     { path: "/admin/list-product", label: "Product List", icon: <FaListAlt /> },
     { path: "/admin/orders", label: "Orders", icon: <MdFactCheck /> },
   ];
+
+  const logout = async () => {
+    try {
+      const response = await axios.post("/api/admin/logout");
+      if (response.status === 200) {
+        toast.success(response.data.message || "Logged out successfully");
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <div className="m-auto max-w-[1440px] flex flex-col sm:flex-row">
@@ -44,7 +57,7 @@ const Sidebar = () => {
             <div className="max-sm:ml-5 sm:mt-48">
               <button
                 className="flexStart gap-x-2 lg:pl-12 p-5 medium-15 cursor-pointer h-10 rounded-xl text-red-500"
-                onClick={() => navigate("/")}
+                onClick={logout}
               >
                 <BiLogOut className="text-lg" />
                 <div className="hidden sm:flex">Logout</div>

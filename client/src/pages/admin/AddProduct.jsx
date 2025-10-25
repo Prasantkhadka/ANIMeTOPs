@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import upload_icon from "../../assets/upload_icon.png";
+import { ShopContext } from "../../context/ShopContext.jsx";
+import toast from "react-hot-toast";
 
 const AddProduct = () => {
   const [name, setName] = useState("");
@@ -11,9 +13,43 @@ const AddProduct = () => {
   const [sizes, setSizes] = useState([]);
   const [files, setFiles] = useState([]);
 
-  const onSubmitHandler = (e) => {
+  const { axios } = useContext(ShopContext);
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
+    try {
+      const productData = {
+        name,
+        description,
+        price,
+        offerPrice,
+        category,
+        popular,
+        sizes,
+      };
+
+      const formData = new FormData();
+      formData.append("productData", JSON.stringify(productData));
+      for (let i = 0; i < files.length; i++) {
+        formData.append("images", files[i]);
+      }
+      const response = await axios.post("/api/product/add-product", formData);
+      if (response.status === 201) {
+        toast.success(response.data.message || "Product added successfully");
+        // Reset form
+        setName("");
+        setDescription("");
+        setPrice("10");
+        setOfferPrice("10");
+        setCategory("T-Shirts");
+        setPopular(false);
+        setSizes([]);
+        setFiles([]);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (

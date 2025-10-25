@@ -12,17 +12,20 @@ export const adminLogin = async (req, res) => {
     }
 
     const token = jwt.sign({ email }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "1h",
     });
 
     res.cookie("adminToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 60 * 60 * 1000, // 1 hour
     });
 
-    return res.status(200).json({ message: "Admin logged in successfully" });
+    // Return success flag so client can react accordingly
+    return res
+      .status(200)
+      .json({ success: true, message: "Admin logged in successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });
   }

@@ -19,7 +19,7 @@ await connectDB(); /// Connect to the database
 await connectCloudinary(); /// Connect to Cloudinary for image storage
 
 // CORS configuration allow multiple origins
-const allowedOrigins = ["http://localhost:5173/"];
+const allowedOrigins = ["http://localhost:5173"];
 
 /// Middleware setup
 app.use(express.json()); /// Middleware to parse JSON requests

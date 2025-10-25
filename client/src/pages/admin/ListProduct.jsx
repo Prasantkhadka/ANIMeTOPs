@@ -1,22 +1,31 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../../context/ShopContext.jsx";
+import toast from "react-hot-toast";
 
 const ListProduct = () => {
-  const { products, currency, fetchProducts } = useContext(ShopContext);
+  const { products, currency, fetchProducts, axios } = useContext(ShopContext);
   const [productList, setProductList] = useState([]);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  useEffect(() => {
     setProductList(products);
-  }, [products]);
+    fetchProducts();
+  }, [products, fetchProducts]);
 
-  const toggleInStock = (index) => {
-    const updatedList = [...productList];
-    updatedList[index].inStock = !updatedList[index].inStock;
-    setProductList(updatedList);
+  const toggleInStock = async (productId, inStock) => {
+    try {
+      const response = await axios.post("/api/product/stock", {
+        productId,
+        inStock,
+      });
+      if (response.status === 200) {
+        fetchProducts();
+        toast.success(response.data.message || "Product stock updated");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -41,7 +50,7 @@ const ListProduct = () => {
               {/* Image */}
               <div className="flex justify-center">
                 <img
-                  src={product.image || product.images?.[0]}
+                  src={product.image?.[0] || product.images?.[0]}
                   alt={product.name}
                   className="w-14 h-14 object-cover rounded-md border border-gray-200"
                 />
@@ -65,16 +74,18 @@ const ListProduct = () => {
 
               {/* In Stock Toggle */}
               <div className="flex justify-center">
-                <button
-                  onClick={() => toggleInStock(index)}
-                  className={`px-3 py-1 rounded text-sm font-medium transition-all duration-200 ${
-                    product.inStock
-                      ? "bg-green-100 text-green-700 hover:bg-green-200"
-                      : "bg-red-100 text-red-700 hover:bg-red-200"
-                  }`}
-                >
-                  {product.inStock ? "Yes" : "No"}
-                </button>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    defaultChecked={product.inStock}
+                    onChange={() =>
+                      toggleInStock(product._id, !product.inStock)
+                    }
+                  />
+                  <div className="w-10 h-6 rounded-full transition-colors duration-300 bg-gray-300 peer peer-checked:bg-green-500"></div>
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 ease-in-out peer-checked:translate-x-4"></div>
+                </label>
               </div>
             </div>
           ))

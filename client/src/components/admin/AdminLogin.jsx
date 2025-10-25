@@ -1,22 +1,37 @@
 import React, { useEffect } from "react";
 import { useContext, useState } from "react";
 import { ShopContext } from "../../context/ShopContext.jsx";
+import { toast } from "react-hot-toast";
 
 const AdminLogin = () => {
-  const { isAdmin, setIsAdmin, navigate } = useContext(ShopContext);
+  const { isAdmin, setIsAdmin, navigate, axios } = useContext(ShopContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
-    setIsAdmin(true);
+    try {
+      const response = await axios.post("/api/admin/signin", {
+        email,
+        password,
+      });
+      if (response.data.success) {
+        setIsAdmin(true);
+        navigate("/admin");
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {
     if (isAdmin) {
       navigate("/admin");
     }
-  }, [isAdmin]);
+  }, [isAdmin, navigate]);
 
   return (
     !isAdmin && (
@@ -53,6 +68,7 @@ const AdminLogin = () => {
               type="password"
               placeholder="Enter your password"
               value={password}
+              autoComplete="current-password"
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-colors"
