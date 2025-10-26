@@ -1,17 +1,44 @@
 import React, { useContext, useState } from "react";
 import { ShopContext } from "../context/ShopContext.jsx";
 import { AiOutlineClose } from "react-icons/ai";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
-  const { setShowUserLogin } = useContext(ShopContext);
+  const { setShowUserLogin, axios, fetchUserData, navigate } =
+    useContext(ShopContext);
   const [mode, setMode] = useState("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
-    // backend logic will be added later
+
+    try {
+      const response = await axios.post(`/api/user/${mode}`, {
+        name,
+        email,
+        password,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success(
+          mode === "signup"
+            ? "Account created successfully"
+            : "Signed in successfully"
+        );
+
+        navigate("/");
+        await fetchUserData();
+        setShowUserLogin(false);
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.message || "Something went wrong");
+      } else {
+        toast.error("Network error");
+      }
+    }
   };
 
   return (
@@ -20,6 +47,7 @@ const Login = () => {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
     >
       <form
+        onClick={(e) => e.stopPropagation()}
         onSubmit={onSubmitHandler}
         className="relative flex flex-col w-full max-w-md rounded-xl shadow-2xl border border-gray-300 bg-white"
       >

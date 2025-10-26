@@ -14,10 +14,10 @@ const Cart = () => {
   useEffect(() => {
     if (products.length > 0 && cartItems) {
       const tempData = [];
-      for (const itemId in cartItems) {
-        for (const size in cartItems[itemId]) {
-          if (cartItems[itemId][size] > 0) {
-            tempData.push({ _id: itemId, size: size });
+      for (const productId in cartItems) {
+        for (const size in cartItems[productId]) {
+          if (cartItems[productId][size] > 0) {
+            tempData.push({ productId: productId, size: size });
           }
         }
       }
@@ -42,7 +42,7 @@ const Cart = () => {
     <div className="max-padd-contauner py-16 pt-28 bg-primary ">
       <div className="flex flex-col lg:flex-row gap-20 lg:gap-28">
         {/* Left side */}
-        <div className="flex flex-[2] flex-col gap-3 text-[95%]">
+        <div className="max-padd-container flex flex-[2] flex-col gap-3 text-[95%]">
           <Title title1={"Cart"} title2={"Overview"} title1Styles={"pb-5"} />
           <div className="grid grid-cols-[6fr_1fr_1fr] text-base font-medium bg-white p-2">
             <h5 className="h5 text-left">Product Details</h5>
@@ -51,9 +51,9 @@ const Cart = () => {
           </div>
           {cartData.map((item, index) => {
             const product = products.find(
-              (product) => product._id === item._id
+              (product) => product._id === item.productId
             );
-            const quantity = cartItems[item._id][item.size];
+            const quantity = cartItems[item.productId][item.size];
             return (
               <div
                 key={index}
@@ -77,14 +77,14 @@ const Cart = () => {
                     <div className="flexBetween">
                       <div className="flex items-center ring-1 ring-slate-900/5 rounded-full overflow-hidden bg-primary">
                         <button
-                          onClick={() => decrement(item._id, item.size)}
+                          onClick={() => decrement(item.productId, item.size)}
                           className="p-1.5 bg-white text-secondary rounded-full shadow-md"
                         >
                           <FaMinus className="text-xs" />
                         </button>
                         <p className="px-2">{quantity}</p>
                         <button
-                          onClick={() => increment(item._id, item.size)}
+                          onClick={() => increment(item.productId, item.size)}
                           className="p-1.5 bg-white text-secondary rounded-full shadow-md"
                         >
                           <FaPlus className="text-xs" />
@@ -98,7 +98,7 @@ const Cart = () => {
                   {product.offerPrice * quantity}
                 </p>
                 <button
-                  onClick={() => updateQuantity(item._id, item.size, 0)}
+                  onClick={() => updateQuantity(item.productId, item.size, 0)}
                   className="cursor-pointer mx-auto"
                 >
                   <IoCloseCircleOutline className="text-xl" />

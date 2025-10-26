@@ -18,6 +18,6 @@ productRouter.post(
 );
 productRouter.get("/list-products", listProducts);
 productRouter.post("/product/:id", getProduct);
-productRouter.post("/stock", changeStock);
+productRouter.put("/stock", changeStock);
 
 export default productRouter;

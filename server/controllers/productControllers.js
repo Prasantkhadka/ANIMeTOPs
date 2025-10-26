@@ -31,16 +31,16 @@ export const addProduct = async (req, res) => {
 export const listProducts = async (req, res) => {
   try {
     const products = await productModel.find({});
-    const formatted = products.map((p) => ({
-      productId: p._id,
-      name: p.name,
-      price: p.price,
-      offerPrice: p.offerPrice,
-      sizes: p.sizes,
-      category: p.category,
-      image: p.image,
-      inStock: p.inStock,
-      description: p.description,
+    const formatted = products.map((product) => ({
+      _id: product._id,
+      name: product.name,
+      price: product.price,
+      offerPrice: product.offerPrice,
+      sizes: product.sizes,
+      category: product.category,
+      image: product.image,
+      inStock: product.inStock,
+      description: product.description,
     }));
     res.status(200).json(formatted);
   } catch (error) {
@@ -62,7 +62,9 @@ export const getProduct = async (req, res) => {
 // update product stock status
 export const changeStock = async (req, res) => {
   try {
+    console.log("Request body:", req.body);
     const { productId, inStock } = req.body;
+    console.log("Updating stock:", productId, inStock);
     await productModel.findByIdAndUpdate(productId, { inStock });
     res.status(200).json({ message: "Product stock updated" });
   } catch (error) {

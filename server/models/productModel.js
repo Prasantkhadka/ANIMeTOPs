@@ -15,6 +15,9 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    offerPrice: {
+      type: Number,
+    },
     image: {
       type: Array,
       required: true,

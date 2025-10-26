@@ -17,6 +17,7 @@ const Header = () => {
     setSearchQuery,
     setShowUserLogin,
     getCartCount,
+    handleLogout,
   } = useContext(ShopContext);
   const [menuOpened, setMenuOpened] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -128,7 +129,10 @@ const Header = () => {
                 >
                   Orders
                 </li>
-                <li className="p-2 text-tertiary rounded-md hover:bg-primary cursor-pointer">
+                <li
+                  onClick={handleLogout}
+                  className="p-2 text-tertiary rounded-md hover:bg-primary cursor-pointer"
+                >
                   Logout
                 </li>
               </ul>

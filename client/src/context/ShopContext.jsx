@@ -34,6 +34,57 @@ const ShopContextProvider = ({ children }) => {
     checkAdminAuth();
   }, []);
 
+  //
+
+  // Fetch user data
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get("/api/user/is-auth");
+      if (response?.status === 200 || response.data?.user) {
+        setUser(response.data.user);
+        setCartItems(response.data.cartData || {});
+      } else {
+        setUser(null);
+        setCartItems({});
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        setUser(null);
+        setCartItems({});
+      } else {
+        toast.error(error.message);
+        setUser(null);
+        setCartItems({});
+      }
+    }
+  };
+
+  // Login handler after fetching user data
+  const handleLoginSuccess = async () => {
+    try {
+      await fetchUserData();
+      navigate("/");
+      toast.success("Logged in successfully");
+    } catch (error) {
+      toast.error(error.message || "Failed to login");
+    }
+  };
+
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post("/api/user/logout");
+      if (response.status === 200) {
+        setUser(null);
+        setCartItems({});
+        navigate("/");
+        toast.success(response.data.message || "Logged out successfully");
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to logout");
+    }
+  };
+
   // Fetch all products
   const fetchProducts = async () => {
     try {
@@ -49,42 +100,68 @@ const ShopContextProvider = ({ children }) => {
   };
 
   // Add to cart
-  const addToCart = async (itemId, size) => {
+  const addToCart = async (productId, size) => {
     if (!size) return toast.error("Please select a size");
     let cartData = structuredClone(cartItems);
-    cartData[itemId] = cartData[itemId] || {};
-    cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
+    cartData[productId] = cartData[productId] || {};
+    cartData[productId][size] = (cartData[productId][size] || 0) + 1;
     setCartItems(cartData);
-    toast.success("Product added to cart");
+
+    if (user) {
+      try {
+        const response = await axios.post("/api/cart/add-to-cart", {
+          productId,
+          size,
+        });
+        if (response.status === 200) {
+          toast.success(response.data.message || "Product added to cart");
+        }
+      } catch (error) {
+        toast.error(error.message || "Failed to add product to cart");
+      }
+    }
   };
 
   // Get cart count
   const getCartCount = () => {
     let count = 0;
-    for (const itemId in cartItems) {
-      for (const size in cartItems[itemId]) {
-        count += cartItems[itemId][size];
+    for (const productId in cartItems) {
+      for (const size in cartItems[productId]) {
+        count += cartItems[productId][size];
       }
     }
     return count;
   };
 
   // Update cart quantity
-  const updateQuantity = (itemId, size, quantity) => {
+  const updateQuantity = (productId, size, quantity) => {
     let cartData = structuredClone(cartItems);
-    cartData[itemId][size] = quantity;
+    cartData[productId][size] = quantity;
     setCartItems(cartData);
-    toast.success("Cart updated successfully");
+    if (user) {
+      try {
+        const response = axios.put("/api/cart/update-cart", {
+          productId,
+          size,
+          quantity,
+        });
+        if (response.status === 200) {
+          toast.success(response.data.message || "Cart updated successfully");
+        }
+      } catch (error) {
+        toast.error(error.message || "Failed to update cart");
+      }
+    }
   };
 
   // Get cart amount
   const getCartAmount = () => {
     let total = 0;
-    for (const itemId in cartItems) {
-      const product = products.find((product) => product._id === itemId);
+    for (const productId in cartItems) {
+      const product = products.find((product) => product._id === productId);
       if (!product) continue;
-      for (const size in cartItems[itemId]) {
-        total += product.offerPrice * cartItems[itemId][size];
+      for (const size in cartItems[productId]) {
+        total += product.offerPrice * cartItems[productId][size];
       }
     }
     return total;
@@ -92,6 +169,7 @@ const ShopContextProvider = ({ children }) => {
 
   useEffect(() => {
     fetchProducts();
+    fetchUserData();
   }, []);
 
   const value = {
@@ -116,6 +194,9 @@ const ShopContextProvider = ({ children }) => {
     setIsAdmin,
     fetchProducts,
     axios,
+    fetchUserData,
+    handleLoginSuccess,
+    handleLogout,
   };
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 };

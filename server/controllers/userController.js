@@ -88,7 +88,8 @@ export const isAuth = async (req, res) => {
   try {
     const { userId } = req;
     const user = await userModel.findById(userId).select("-password");
-    return res.status(200).json({ user });
+    const cartData = user?.cartData || {};
+    return res.status(200).json({ user, cartData });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

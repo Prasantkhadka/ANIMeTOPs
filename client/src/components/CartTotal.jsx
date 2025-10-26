@@ -9,6 +9,10 @@ const CartTotal = ({ method, setMethod }) => {
   const location = useLocation();
   const isOrderPage = location.pathname.includes("place-order");
 
+  const amount = getCartAmount();
+  const tax = amount * 0.02;
+  const total = amount + (amount === 0 ? 0 : deliveryCharge) + tax;
+
   return (
     <div>
       <h3 className="bold-22">
@@ -50,7 +54,7 @@ const CartTotal = ({ method, setMethod }) => {
           <h5 className="h5">Price</h5>
           <p className="font-bold">
             {currency}
-            {getCartAmount()}
+            {amount.toFixed(2)}
           </p>
         </div>
         <div className="flex justify-between">
@@ -65,20 +69,14 @@ const CartTotal = ({ method, setMethod }) => {
           <h5 className="h5">Tax(2%)</h5>
           <p className="font-bold">
             {currency}
-            {(getCartAmount() * 2) / 100}
+            {tax.toFixed(2)}
           </p>
         </div>
         <div className="flex justify-between text-lg font-medium mt-3">
           <h4 className="h4">Total Amount</h4>{" "}
           <p className="bold-18">
             {currency}
-            {getCartAmount() === 0
-              ? "0.00"
-              : (
-                  getCartAmount() +
-                  deliveryCharge +
-                  (getCartAmount() * 2) / 100
-                ).toFixed(2)}
+            {total.toFixed(2)}
           </p>
         </div>
       </div>
