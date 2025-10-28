@@ -19,6 +19,7 @@ import Sidebar from "./components/admin/Sidebar.jsx";
 import AddProduct from "./pages/admin/AddProduct.jsx";
 import ListProduct from "./pages/admin/ListProduct.jsx";
 import Orders from "./pages/admin/Orders.jsx";
+import Loading from "./pages/Loading.jsx";
 
 export default function App() {
   const { showUserLogin, isAdmin } = useContext(ShopContext);
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/my-orders" element={<MyOrders />} />
+        <Route path="/loader" element={<Loading />} />
         <Route path="/admin" element={isAdmin ? <Sidebar /> : <AdminLogin />}>
           <Route index element={isAdmin ? <AddProduct /> : null} />
           <Route path="list-product" element={<ListProduct />} />

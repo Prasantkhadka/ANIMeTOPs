@@ -3,13 +3,14 @@ import Title from "../components/Title.jsx";
 import { useContext, useState } from "react";
 import { ShopContext } from "../context/ShopContext.jsx";
 import CartTotal from "../components/CartTotal.jsx";
+import toast from "react-hot-toast";
 
 const PlaceOrder = () => {
-  const { navigate, cartItems, products, setCartItems } =
+  const { navigate, cartItems, products, setCartItems, axios } =
     useContext(ShopContext);
-  const [method, setMethod] = useState("COD");
+  const [method, setMethod] = useState("cod");
 
-  const [FormData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
@@ -24,11 +25,59 @@ const PlaceOrder = () => {
   const changeHandler = (e) => {
     const name = e.target.name;
     const value = e.target.value;
-    setFormData({ ...FormData, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
+
+    try {
+      let orderData = [];
+      for (const productId in cartItems) {
+        for (const size in cartItems[productId]) {
+          if (cartItems[productId][size] > 0) {
+            const productInfo = structuredClone(
+              products.find((product) => product._id === productId)
+            );
+            if (productInfo) {
+              productInfo.size = size;
+              productInfo.quantity = cartItems[productId][size];
+              orderData.push(productInfo);
+            }
+          }
+        }
+      }
+      // convert orderData to items array for backend
+      let items = orderData.map((product) => ({
+        product: product._id,
+        quantity: product.quantity,
+        size: product.size,
+      }));
+
+      if (method === "cod") {
+        const response = await axios.post("/api/order/cod", {
+          items,
+          address: formData,
+        });
+        if (response.status === 201) {
+          setCartItems({});
+          toast.success(response.data.message || "Order placed successfully");
+          navigate("/my-orders");
+        }
+      } else {
+        const response = await axios.post("/api/order/stripe", {
+          items,
+          address: formData,
+        });
+        if (response.status === 201) {
+          window.location.replace(response.data.url);
+        } else {
+          toast.error(response.data.message || "Failed to place order");
+        }
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to place order");
+    }
   };
 
   return (
@@ -46,7 +95,7 @@ const PlaceOrder = () => {
             <div className="flex gap-3">
               <input
                 onChange={changeHandler}
-                value={FormData.firstName}
+                value={formData.firstName}
                 type="text"
                 name="firstName"
                 placeholder="First Name"
@@ -55,7 +104,7 @@ const PlaceOrder = () => {
               />
               <input
                 onChange={changeHandler}
-                value={FormData.lastName}
+                value={formData.lastName}
                 type="text"
                 name="lastName"
                 placeholder="Last Name"
@@ -65,7 +114,7 @@ const PlaceOrder = () => {
             </div>
             <input
               onChange={changeHandler}
-              value={FormData.email}
+              value={formData.email}
               type="email"
               name="email"
               placeholder="Email"
@@ -74,7 +123,7 @@ const PlaceOrder = () => {
             />
             <input
               onChange={changeHandler}
-              value={FormData.phone}
+              value={formData.phone}
               type="phone"
               name="phone"
               placeholder="Phone"
@@ -83,7 +132,7 @@ const PlaceOrder = () => {
             />
             <input
               onChange={changeHandler}
-              value={FormData.street}
+              value={formData.street}
               type="text"
               name="street"
               placeholder="Street Address"
@@ -93,7 +142,7 @@ const PlaceOrder = () => {
             <div className="flex gap-3">
               <input
                 onChange={changeHandler}
-                value={FormData.city}
+                value={formData.city}
                 type="text"
                 name="city"
                 placeholder="City"
@@ -102,7 +151,7 @@ const PlaceOrder = () => {
               />
               <input
                 onChange={changeHandler}
-                value={FormData.state}
+                value={formData.state}
                 type="text"
                 name="state"
                 placeholder="State"
@@ -113,7 +162,7 @@ const PlaceOrder = () => {
             <div className="flex gap-3">
               <input
                 onChange={changeHandler}
-                value={FormData.zipcode}
+                value={formData.zipcode}
                 type="text"
                 name="zipcode"
                 placeholder="Zip Code"
@@ -122,7 +171,7 @@ const PlaceOrder = () => {
               />
               <input
                 onChange={changeHandler}
-                value={FormData.country}
+                value={formData.country}
                 type="text"
                 name="country"
                 placeholder="Country"

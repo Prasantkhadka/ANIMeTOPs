@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Title from "./Title.jsx";
-// import Swiper JS
 import { Swiper, SwiperSlide } from "swiper/react";
-// import Swiper styles
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
 import { ShopContext } from "../context/ShopContext.jsx";
@@ -13,7 +11,7 @@ const PopularProducts = () => {
   const { products } = useContext(ShopContext);
 
   useEffect(() => {
-    const data = products.filter((item) => item.popular);
+    const data = products.filter((product) => product.popular);
     setPopularProducts(data.slice(0, 6));
   }, [products]);
 

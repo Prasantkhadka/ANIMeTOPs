@@ -38,6 +38,7 @@ export const listProducts = async (req, res) => {
       offerPrice: product.offerPrice,
       sizes: product.sizes,
       category: product.category,
+      popular: product.popular,
       image: product.image,
       inStock: product.inStock,
       description: product.description,

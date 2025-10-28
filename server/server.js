@@ -9,6 +9,8 @@ import productRouter from "./routes/productRoutes.js";
 import cartRouter from "./routes/cartRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
 import connectCloudinary from "./config/cloudinary.js";
+import { stripeWebhook } from "./controllers/orderController.js";
+import Stripe from "stripe";
 
 dotenv.config(); /// Load environment variables from .env file
 
@@ -20,6 +22,8 @@ await connectCloudinary(); /// Connect to Cloudinary for image storage
 
 // CORS configuration allow multiple origins
 const allowedOrigins = ["http://localhost:5173"];
+
+app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhook);
 
 /// Middleware setup
 app.use(express.json()); /// Middleware to parse JSON requests

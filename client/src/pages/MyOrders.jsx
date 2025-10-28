@@ -1,14 +1,25 @@
 import React, { useEffect, useContext, useState } from "react";
 import Title from "../components/Title.jsx";
 import { ShopContext } from "../context/ShopContext.jsx";
-import { dummyOrders } from "../assets/data";
+import toast from "react-hot-toast";
 
 const MyOrders = () => {
-  const { currency } = useContext(ShopContext);
+  const { currency, axios } = useContext(ShopContext);
   const [orders, setOrders] = useState([]);
 
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.post("/api/order/user-orders");
+      if (response.status === 200) {
+        setOrders(response.data.orders);
+      }
+    } catch (error) {
+      toast.error("Failed to fetch orders: " + error.message);
+    }
+  };
+
   useEffect(() => {
-    setOrders(dummyOrders);
+    fetchOrders();
   }, []);
 
   return (
@@ -78,7 +89,7 @@ const MyOrders = () => {
                     </div>
                     <div className="flex items-center gap-x-2">
                       <h5 className="medium-14">Method:</h5>
-                      <p className="text-gray-500 text-sm">
+                      <p className="text-gray-500 text-sm uppercase">
                         {order.paymentMethod}
                       </p>
                     </div>
@@ -117,7 +128,7 @@ const MyOrders = () => {
                     <p className="text-gray-700 font-medium">{order.status}</p>
                   </div>
                   <button
-                    onClick={() => {}}
+                    onClick={fetchOrders}
                     className="btn-secondary py-1 text-xs rounded-sm"
                   >
                     Track Order
