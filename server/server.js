@@ -2,52 +2,68 @@ import dotenv from "dotenv";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import bodyParser from "body-parser";
 import connectDB from "./config/db.js";
+import connectCloudinary from "./config/cloudinary.js";
+
 import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import cartRouter from "./routes/cartRoutes.js";
-import orderRouter from "./routes/orderRoutes.js";
-import connectCloudinary from "./config/cloudinary.js";
 import { stripeWebhook } from "./controllers/orderController.js";
-import Stripe from "stripe";
+import orderRouter from "./routes/orderRoutes.js";
 
-dotenv.config(); /// Load environment variables from .env file
+dotenv.config(); // Load environment variables
 
-const app = express(); /// Create an Express application
-const PORT = process.env.PORT || 1111; /// Define the port
+const app = express();
+const PORT = process.env.PORT || 1111;
 
-await connectDB(); /// Connect to the database
-await connectCloudinary(); /// Connect to Cloudinary for image storage
+// Connect to database and Cloudinary
+await connectDB();
+await connectCloudinary();
 
-// CORS configuration allow multiple origins
+// CORS configuration
 const allowedOrigins = ["http://localhost:5173"];
-
-app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhook);
-
-/// Middleware setup
-app.use(express.json()); /// Middleware to parse JSON requests
-app.use(cookieParser()); /// Middleware to parse HTTP request cookies
 app.use(
   cors({
-    origin: allowedOrigins, // Replace with your allowed origins
-    credentials: true, // Allow cookies/authorization headers to be sent
+    origin: allowedOrigins,
+    credentials: true,
   })
 );
 
-/// API Routes
-app.use("/api/user", userRouter); /// User routes
-app.use("/api/admin", adminRouter); /// Admin routes
-app.use("/api/product", productRouter); /// Product routes
-app.use("/api/cart", cartRouter); /// Cart routes
-app.use("/api/order", orderRouter); /// Order routes
+// Cookie parser
+app.use(cookieParser());
 
-/// Basic route to test server
+// ------------------------
+// Stripe Webhook Route
+// Must use raw body BEFORE express.json()
+// ------------------------
+app.post(
+  "/stripe",
+  bodyParser.raw({ type: "application/json" }),
+  stripeWebhook
+);
+
+// ------------------------
+// JSON Middleware for all other routes
+// ------------------------
+app.use(express.json());
+
+// ------------------------
+// API Routes
+// ------------------------
+app.use("/api/user", userRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/product", productRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
+
+// Basic test route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-/// Start the server
+// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
