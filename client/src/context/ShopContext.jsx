@@ -18,23 +18,18 @@ const ShopContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({ items: [] });
   const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    const checkAdminAuth = async () => {
-      try {
-        const res = await axios.get("/api/admin/is-auth", {
-          withCredentials: true,
-        });
-        if (res.status === 200) {
-          setIsAdmin(true);
-        }
-      } catch {
-        setIsAdmin(false);
+  const checkAdminAuth = async () => {
+    try {
+      const res = await axios.get("/api/admin/is-auth", {
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        setIsAdmin(true);
       }
-    };
-    checkAdminAuth();
-  }, []);
-
-  //
+    } catch {
+      setIsAdmin(false);
+    }
+  };
 
   // Fetch user data
   const fetchUserData = async () => {
@@ -172,6 +167,7 @@ const ShopContextProvider = ({ children }) => {
   useEffect(() => {
     fetchProducts();
     fetchUserData();
+    checkAdminAuth();
   }, []);
 
   const value = {
