@@ -10,18 +10,18 @@ const cookieOptions = {
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
-// User Signup and Auto-Login Controller
+// User Signup and Login Controller
 export const userSignup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // 1. Check if user already exists
+    // Check if user already exists
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // 2. Validate email and password
+    // validate password and password strength
     if (!validator.isEmail(email)) {
       return res.status(400).json({ message: "Please enter a valid email" });
     }
@@ -32,35 +32,24 @@ export const userSignup = async (req, res) => {
         .json({ message: "Password must be at least 8 characters long" });
     }
 
-    // 3. Hash password
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4. Create new user
+    // Create new user
     const newUser = new userModel({ name, email, password: hashedPassword });
     const user = await newUser.save();
 
-    // 5. Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    // 6. Set token cookie for persistent login
     res.cookie("token", token, cookieOptions);
-
-    // 7. Return success response with user info and token
     return res.status(201).json({
-      success: true,
-      message: "Signup successful! You are now logged in.",
-      token, // <--- send token for frontend localStorage/sessionStorage if needed
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      message: "User created successfully",
+      user: { email: user.email, name: user.name },
     });
   } catch (error) {
-    console.error("Signup error:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ message: "Server Error", error });
   }
 };
 
