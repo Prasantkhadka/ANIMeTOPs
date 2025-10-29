@@ -122,8 +122,11 @@ export const placeOrderStripe = async (req, res) => {
     // Initialize Stripe
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-    // Resolve frontend origin for success/cancel URLs
-    const origin = process.env.CLIENT_URL || "http://localhost:5173";
+    // Resolve frontend origin for success/cancel URLs.
+    // Prefer explicit CLIENT_URL (set in Vercel env). If not set, fall back to the
+    // incoming request origin so preview deployments work as expected.
+    const origin =
+      process.env.CLIENT_URL || req.headers.origin || "http://localhost:5173";
 
     // Prepare Stripe line items
     const lineItems = [
