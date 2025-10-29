@@ -6,7 +6,7 @@ import validator from "validator";
 const cookieOptions = {
   httpOnly: true, // Prevent client-side JS from accessing the cookie
   secure: process.env.NODE_ENV === "production", // Use secure cookies in production, ensure the cookie is only sent over HTTPS
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict", // controls whether cookies are sent with cross-site requests
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // controls whether cookies are sent with cross-site requests
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
