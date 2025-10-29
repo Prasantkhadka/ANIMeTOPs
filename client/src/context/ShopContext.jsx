@@ -3,8 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 
-axios.defaults.withCredentials = true; // Enable sending cookies for API requests
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL; // Set base URL as backend url for API requests
+// Enable sending cookies for API requests
+axios.defaults.withCredentials = true;
+
+// In development use VITE_BACKEND_URL (points to local or dev backend).
+// In production use relative URLs so requests go to the same origin and
+// Vercel's `vercel.json` rewrites/proxy can forward `/api/*` to the backend.
+// This avoids third-party cookie blocking when frontend/backend are on
+// different vercel.app subdomains.
+if (import.meta.env.DEV) {
+  axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+} else {
+  axios.defaults.baseURL = ""; // same-origin (relative) requests
+}
 
 export const ShopContext = createContext();
 const ShopContextProvider = ({ children }) => {
