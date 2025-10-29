@@ -2,6 +2,14 @@ import jwt from "jsonwebtoken";
 
 // Middleware to authenticate user using JWT
 const authUser = async (req, res, next) => {
+  // DEBUG: log incoming origin and cookies to help diagnose missing cookie issues in production
+  try {
+    console.log("authUser DEBUG - origin:", req.headers.origin);
+    console.log("authUser DEBUG - cookie header:", req.headers.cookie);
+    console.log("authUser DEBUG - parsed cookies:", req.cookies);
+  } catch (e) {
+    console.log("authUser DEBUG - logging error", e && e.message);
+  }
   const token =
     req.cookies.token || req.header("Authorization")?.replace("Bearer ", "");
   if (!token) {
