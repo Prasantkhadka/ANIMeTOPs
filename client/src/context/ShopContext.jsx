@@ -83,6 +83,13 @@ const ShopContextProvider = ({ children }) => {
       if (response.status === 200) {
         setUser(null);
         setCartItems({});
+        // remove stored token (fallback for deployments where cookies aren't shared)
+        try {
+          sessionStorage.removeItem("token");
+          delete axios.defaults.headers.common["Authorization"];
+        } catch {
+          /* ignore */
+        }
         navigate("/");
         toast.success(response.data.message || "Logged out successfully");
       }
