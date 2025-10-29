@@ -45,7 +45,9 @@ const ShopContextProvider = ({ children }) => {
   // Fetch user data
   const fetchUserData = async () => {
     try {
-      const response = await axios.get("/api/user/is-auth");
+      const response = await axios.get("/api/user/is-auth", {
+        withCredentials: true,
+      });
       if (response?.status === 200 || response.data?.user) {
         setUser(response.data.user);
         setCartItems(response.data.cartData || {});
