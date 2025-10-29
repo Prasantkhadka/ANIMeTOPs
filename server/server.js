@@ -23,7 +23,7 @@ await connectDB();
 await connectCloudinary();
 
 // CORS configuration
-const allowedOrigins = ["https://ani-me-to-ps-22qu.vercel.app"];
+const allowedOrigins = ["https://animetops.vercel.app"];
 app.use(
   cors({
     origin: allowedOrigins,
