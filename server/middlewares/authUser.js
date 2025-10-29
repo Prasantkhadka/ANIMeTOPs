@@ -2,8 +2,7 @@ import jwt from "jsonwebtoken";
 
 // Middleware to authenticate user using JWT
 const authUser = async (req, res, next) => {
-  const token =
-    req.cookies.token || req.header("Authorization")?.replace("Bearer ", "");
+  const token = req.cookies.token;
   if (!token) {
     return res.status(401).json({ message: "Not Authorized login again" });
   }

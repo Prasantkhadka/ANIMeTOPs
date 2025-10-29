@@ -21,7 +21,7 @@ const ShopContextProvider = ({ children }) => {
   useEffect(() => {
     const checkAdminAuth = async () => {
       try {
-        const res = await axios.get(`/api/admin/is-auth`, {
+        const res = await axios.get("/api/admin/is-auth", {
           withCredentials: true,
         });
         if (res.status === 200) {
@@ -39,7 +39,9 @@ const ShopContextProvider = ({ children }) => {
   // Fetch user data
   const fetchUserData = async () => {
     try {
-      const response = await axios.get("/api/user/is-auth");
+      const response = await axios.get("/api/user/is-auth", {
+        withCredentials: true,
+      });
       if (response?.status === 200 || response.data?.user) {
         setUser(response.data.user);
         setCartItems(response.data.cartData || {});
