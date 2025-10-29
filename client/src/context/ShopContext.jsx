@@ -4,7 +4,13 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 
 axios.defaults.withCredentials = true; // Enable sending cookies for API requests
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL; // Set base URL as backend url for API requests
+
+axios.defaults.baseURL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:1111"; // Set base URL as backend url for API requests
+
+if (import.meta.env.MODE !== "production") {
+  console.log("Axios baseURL:", axios.defaults.baseURL);
+}
 
 export const ShopContext = createContext();
 const ShopContextProvider = ({ children }) => {

@@ -11,6 +11,13 @@ const PopularProducts = () => {
   const { products } = useContext(ShopContext);
 
   useEffect(() => {
+    // Guard: ensure products is an array (sometimes a failed API call returns HTML or a string)
+    if (!Array.isArray(products)) {
+      console.warn("PopularProducts: products is not an array", products);
+      setPopularProducts([]);
+      return;
+    }
+
     const data = products.filter((product) => product.popular);
     setPopularProducts(data.slice(0, 6));
   }, [products]);

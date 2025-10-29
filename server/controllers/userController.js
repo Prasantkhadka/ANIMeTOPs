@@ -43,7 +43,18 @@ export const userSignup = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, cookieOptions);
+    // Per-request cookie options: in production allow sharing across vercel subdomains
+    const opts = { ...cookieOptions };
+    try {
+      const origin = req.headers.origin || "";
+      if (process.env.NODE_ENV === "production" && origin.includes(".vercel.app")) {
+        opts.domain = ".vercel.app";
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    res.cookie("token", token, opts);
     return res.status(201).json({
       message: "User created successfully",
       user: { email: user.email, name: user.name },
@@ -73,7 +84,15 @@ export const userLogin = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, cookieOptions);
+    const opts2 = { ...cookieOptions };
+    try {
+      const origin = req.headers.origin || "";
+      if (process.env.NODE_ENV === "production" && origin.includes(".vercel.app")) {
+        opts2.domain = ".vercel.app";
+      }
+    } catch (e) {}
+
+    res.cookie("token", token, opts2);
     return res.status(200).json({
       message: "User signed in successfully",
       user: { email: user.email, name: user.name },
@@ -98,7 +117,16 @@ export const isAuth = async (req, res) => {
 // User Logout
 export const userLogout = async (req, res) => {
   try {
-    res.clearCookie("token", cookieOptions);
+    // Clear cookie with same options used when setting it (including domain)
+    const opts = { ...cookieOptions };
+    try {
+      const origin = req.headers.origin || "";
+      if (process.env.NODE_ENV === "production" && origin.includes(".vercel.app")) {
+        opts.domain = ".vercel.app";
+      }
+    } catch (e) {}
+
+    res.clearCookie("token", opts);
     return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });
