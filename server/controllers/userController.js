@@ -43,7 +43,24 @@ export const userSignup = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, cookieOptions);
+    // Build cookie options per-request so we can set a cross-subdomain domain
+    // when running on Vercel (allows frontend and backend on different subdomains
+    // under vercel.app to share the cookie). We only set this in production.
+    const opts = { ...cookieOptions };
+    try {
+      const origin = req.headers.origin || "";
+      if (
+        process.env.NODE_ENV === "production" &&
+        origin.includes(".vercel.app")
+      ) {
+        // Use the apex vercel.app so subdomains can access the cookie
+        opts.domain = ".vercel.app";
+      }
+    } catch (e) {
+      // ignore and use default opts
+    }
+
+    res.cookie("token", token, opts);
     return res.status(201).json({
       message: "User created successfully",
       user: { email: user.email, name: user.name },
@@ -73,7 +90,19 @@ export const userLogin = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, cookieOptions);
+    // Per-request cookie options (see signup above)
+    const opts2 = { ...cookieOptions };
+    try {
+      const origin = req.headers.origin || "";
+      if (
+        process.env.NODE_ENV === "production" &&
+        origin.includes(".vercel.app")
+      ) {
+        opts2.domain = ".vercel.app";
+      }
+    } catch (e) {}
+
+    res.cookie("token", token, opts2);
     return res.status(200).json({
       message: "User signed in successfully",
       user: { email: user.email, name: user.name },
