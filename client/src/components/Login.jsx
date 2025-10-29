@@ -22,18 +22,6 @@ const Login = () => {
       });
 
       if (response.status === 200 || response.status === 201) {
-        // If the server returned a token (useful when cookies can't be shared),
-        // store it and set Authorization header for subsequent requests.
-        const token = response?.data?.token;
-        if (token) {
-          try {
-            sessionStorage.setItem("token", token);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-          } catch {
-            // ignore storage errors
-          }
-        }
-
         toast.success(
           mode === "signup"
             ? "Account created successfully"
