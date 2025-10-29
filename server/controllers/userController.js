@@ -10,18 +10,18 @@ const cookieOptions = {
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
-// User Signup and Login Controller
+// User Signup and Auto-Login Controller
 export const userSignup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if user already exists
+    // 1. Check if user already exists
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // validate password and password strength
+    // 2. Validate email and password
     if (!validator.isEmail(email)) {
       return res.status(400).json({ message: "Please enter a valid email" });
     }
@@ -32,24 +32,35 @@ export const userSignup = async (req, res) => {
         .json({ message: "Password must be at least 8 characters long" });
     }
 
-    // Hash password
+    // 3. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
+    // 4. Create new user
     const newUser = new userModel({ name, email, password: hashedPassword });
     const user = await newUser.save();
 
+    // 5. Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
+    // 6. Set token cookie for persistent login
     res.cookie("token", token, cookieOptions);
+
+    // 7. Return success response with user info and token
     return res.status(201).json({
-      message: "User created successfully",
-      user: { email: user.email, name: user.name },
+      success: true,
+      message: "Signup successful! You are now logged in.",
+      token, // <--- send token for frontend localStorage/sessionStorage if needed
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error });
+    console.error("Signup error:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 

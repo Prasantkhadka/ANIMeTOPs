@@ -15,13 +15,20 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`/api/user/${mode}`, {
-        name,
-        email,
-        password,
-      });
-
+      const response = await axios.post(
+        `/api/user/${mode}`,
+        {
+          name,
+          email,
+          password,
+        },
+        { withCredentials: true }
+      );
       if (response.status === 200 || response.status === 201) {
+        const { user, success } = response.data;
+        if (user && success) {
+          await fetchUserData();
+        }
         toast.success(
           mode === "signup"
             ? "Account created successfully"
@@ -29,7 +36,6 @@ const Login = () => {
         );
 
         navigate("/");
-        await fetchUserData();
         setShowUserLogin(false);
       }
     } catch (error) {
