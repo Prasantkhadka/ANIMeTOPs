@@ -109,8 +109,8 @@ const Cart = () => {
           })}
         </div>
         {/* Right side */}
-        <div className="flex-1 flex-col max-padd-container">
-          <div className="max-w-[360px] w-full bg-white p-5 py-10 max-md:mt-16">
+        <div className="flex-1 flex flex-col items-center lg:items-start max-padd-container">
+          <div className="max-w-[360px] w-full bg-white p-5 py-10 mt-8 lg:mt-0 mx-4 sm:mx-0">
             <CartTotal />
             <button
               onClick={() => navigate("/place-order")}
