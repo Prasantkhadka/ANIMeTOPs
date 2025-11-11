@@ -47,6 +47,7 @@ const Cart = () => {
           <div className="grid grid-cols-[6fr_1fr_1fr] text-base font-medium bg-white p-2">
             <h5 className="h5 text-left">Product Details</h5>
             <h5 className="h5 text-left">Subtotal</h5>
+            {""}
             <h5 className="h5 text-left">Action</h5>
           </div>
           {cartData.map((item, index) => {
@@ -108,7 +109,7 @@ const Cart = () => {
           })}
         </div>
         {/* Right side */}
-        <div className="flex-1 flex-col">
+        <div className="flex-1 flex-col max-padd-container">
           <div className="max-w-[360px] w-full bg-white p-5 py-10 max-md:mt-16">
             <CartTotal />
             <button
