@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
-    <section className="bg-hero bg-cover bg-center bg-no-repeat h-[70vh] w-full sm:h-[80vh] md:h-[90vh] lg:h-[811px] flex items-center justify-center sm:justify-start px-4 sm:px-10 md:px-20">
+    <section className="max-padd-container bg-hero bg-cover bg-center bg-no-repeat h-[70vh] w-full sm:h-[80vh] md:h-[90vh] lg:h-[811px] flex items-center justify-center sm:justify-start px-4 sm:px-10 md:px-20">
       <div className="flex flex-col h-full justify-center max-w-[777px] pt-8">
         <h1 className="h1 max-w-[699px] font-[800] leading-none uppercase">
           <span className="block">Unleash</span>
