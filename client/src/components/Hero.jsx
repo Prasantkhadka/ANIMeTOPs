@@ -5,7 +5,7 @@ const Hero = () => {
   return (
     <section className="max-padd-container bg-hero bg-contain bg-center sm:bg-cover sm:bg-right bg-no-repeat w-full min-h-[60vh] sm:min-h-[700px] md:min-h-[800px] flex items-center justify-start px-4 sm:px-10 md:px-20">
       <div className="flex flex-col h-full justify-center items-start max-w-[777px] pt-8">
-        <h1 className="h1 max-w-[699px] font-[800] leading-none uppercase text-5xl md:text-6xl lg:text-7xl">
+        <h1 className="h1 max-w-[420px] sm:max-w-[699px] font-[800] leading-none uppercase text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
           <span className="block">Unleash</span>
           <span className="block">your</span>
           <span className="block">inner</span>
@@ -29,7 +29,7 @@ const Hero = () => {
         </div> */}
         <Link
           to="/collection"
-          className="inline-flex bg-tertiary text-white flexCenter p-5 w-52 mt-8 bold-20 sm:text-lg rounded-none "
+          className="inline-flex bg-tertiary text-white flexCenter px-4 py-2 sm:px-5 sm:py-3 w-40 sm:w-52 mt-6 text-sm sm:text-lg rounded-none bold-20"
         >
           Shop Now
         </Link>
